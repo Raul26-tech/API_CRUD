@@ -1,4 +1,6 @@
 const express = require("express");
+const req = require("express/lib/request");
+const res = require("express/lib/response");
 
 const server = express();
 
@@ -25,7 +27,7 @@ server.post("/cursos", checkCourses, (req, res) => {
 });
 
 //Atualizando um curso - PUT
-server.put("/cursos/:index", checkCourses, (req, res) => {
+server.put("/cursos/:index", checkCourses, checkeIndexourses, (req, res) => {
   const { index } = req.params;
   const { name } = req.body;
 
@@ -35,7 +37,7 @@ server.put("/cursos/:index", checkCourses, (req, res) => {
 });
 
 // Excluíndo curso - DELETE
-server.delete("/cursos/:index", (req, res) => {
+server.delete("/cursos/:index", checkeIndexourses, (req, res) => {
   const { index } = req.params;
 
   courses.splice(index, 1);
@@ -48,6 +50,15 @@ server.use((req, res, next) => {
 
   return next();
 });
+
+const checkeIndexourses = () => {
+  const cursos = courses[req.params.index];
+  if (!cursos) {
+    res.status(400).json({
+      error: "Usuário não existe",
+    });
+  }
+};
 
 const checkCourses = (req, res, next) => {
   if (!requestAnimationFrame.body.name) {
