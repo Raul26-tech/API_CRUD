@@ -17,7 +17,7 @@ server.get("/curso/:index", (req, res) => {
 });
 
 //Criando novos cursos - POST
-server.post("/cursos", (req, res) => {
+server.post("/cursos", checkCourses, (req, res) => {
   const { name } = req.body;
   courses.push(name);
 
@@ -25,7 +25,7 @@ server.post("/cursos", (req, res) => {
 });
 
 //Atualizando um curso - PUT
-server.put("/cursos/:index", (req, res) => {
+server.put("/cursos/:index", checkCourses, (req, res) => {
   const { index } = req.params;
   const { name } = req.body;
 
@@ -41,5 +41,20 @@ server.delete("/cursos/:index", (req, res) => {
   courses.splice(index, 1);
   return res.json({ message: "Curso excluído" });
 });
+
+// Criando middlewares Gloabais
+server.use((req, res, next) => {
+  console.log(`Request active ${req.url}`);
+
+  return next();
+});
+
+const checkCourses = (req, res, next) => {
+  if (!requestAnimationFrame.body.name) {
+    return res.status(400).json({
+      error: "NOme do curso é obrigatório",
+    });
+  }
+};
 
 server.listen(3000);
